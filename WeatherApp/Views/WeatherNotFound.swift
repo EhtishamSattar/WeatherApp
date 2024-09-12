@@ -1,12 +1,18 @@
 import SwiftUI
 
 struct WeatherUnavailableView: View {
+    @ObservedObject var weather_Data : WeatherData
+    var message : String?
+    @State var subMessage : (Bool, String)?
     var body: some View {
         VStack {
             Spacer()
-            Text("Weather Data is Not Available")
-                .font(.title)
-                .padding()
+            if let message = message {
+                Text(message.isEmpty ? "Weather Data is Not Available" : message)
+                    .font(.title)
+                    .padding()
+            }
+            
             
             Image(systemName: "exclamationmark.triangle")
                 .resizable()
@@ -15,19 +21,25 @@ struct WeatherUnavailableView: View {
                 .foregroundColor(.yellow)
                 .padding()
             
-            Text("Please check your network connection or try again later.")
-                .font(.body)
-                .padding()
+            if let subMessage = subMessage {
+                Text(subMessage.1.isEmpty ? "Please check your network connection or try again later." : subMessage.1)
+                    .font(.body)
+                    .padding()
+            }
             
             Spacer()
         }
         .navigationTitle("Weather Unavailable")
         .navigationBarTitleDisplayMode(.inline)
+//        .onReceive(weather_Data.passthrough, perform: { (success, message) in
+//            subMessage?.0 = success
+//            subMessage?.1 = message
+//        })
     }
 }
 
 struct WeatherUnavailableView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherUnavailableView()
+        WeatherUnavailableView(weather_Data: WeatherData())
     }
 }

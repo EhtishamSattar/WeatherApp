@@ -4,6 +4,9 @@ struct WeatherSearchByCityView: View {
     @State private var cityName: String = ""
     @State private var navigateToWeatherView: Bool = false
     @StateObject var cityWeatherData : WeatherData = WeatherData()
+    @State var showMessageAlert : Bool = false
+    @State var message : String = ""
+    
     
     var body: some View {
         NavigationStack {
@@ -26,8 +29,17 @@ struct WeatherSearchByCityView: View {
                 
                 NavigationLink(value: cityName) {
                     Button(action: {
-                        navigateToWeatherView = true
+                       // navigateToWeatherView = true
+                       // DispatchQueue.main.asyncAfter(deadline: .now() + 3.0){
+                          
+                       // }
+//                        cityWeatherData.getCityWeather(cityName: cityName) { isSuccess in
+//                         
+//
+//                        }
+                        
                         cityWeatherData.getCityWeather(cityName: cityName)
+                        
                     }) {
                         Text("Search")
                             .font(.headline)
@@ -44,6 +56,24 @@ struct WeatherSearchByCityView: View {
                     WeatherDetailView(weatherData: cityWeatherData)
                 }
                 Spacer()
+            }
+            .onReceive(cityWeatherData.passthrough) { response in // RECEIVING PASSTHROUG FROM WATHER VIEWMODEL
+                if response.0 {
+                    navigateToWeatherView = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3){
+                        self.showMessageAlert = true
+                    }
+                    
+                }
+                else{
+                    self.message = response.1
+                    self.showMessageAlert = true
+                }
+            }
+            .alert(isPresented: $showMessageAlert) {
+                Alert(
+                    title: Text(message != "" ? message : "This app provides weather updates with accuracy and consistency")
+                )
             }
             .padding()
             .toolbar {
@@ -63,13 +93,6 @@ struct WeatherSearchByCityView: View {
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        Text("Settings View")
-            .font(.largeTitle)
-            .navigationTitle("Settings")
-    }
-}
 
 #Preview {
     WeatherSearchByCityView()

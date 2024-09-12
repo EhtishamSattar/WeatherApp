@@ -49,6 +49,7 @@ struct WeatherDataCard: View {
         .background(
                     getImageForWeatherDescription(weatherDesc: weatherDesc)
                         .resizable()
+                        .scaledToFill()
                         //.aspectRatio(contentMode: .fill)
                 )
                 .cornerRadius(10)
